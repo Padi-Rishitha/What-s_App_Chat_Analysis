@@ -1,5 +1,7 @@
 
 import streamlit as st
+import matplotlib.pyplot as plt 
+import seaborn as sns
 import preprocessor, helper
 st.sidebar.title("Whats app Chat Analyser")
 
@@ -35,6 +37,11 @@ if uploaded_file is not None:
         with col4:
             st.subheader("Links Shsred")
             st.title(num_links)
-       #finding the busy person
-        if selected_user == 'Overall':
-            col1,col2 == st.columns(2)
+       
+       #monthly timline 
+st.title("Monthly Timeline")
+timeline = helper.monthly_timeline(selected_user,df)
+fig,ax = plt.subplots()
+ax.plot(timeline['time'], timeline['message'],color='green')
+plt.xticks(rotation='vertical')
+st.pyplot(fig)
