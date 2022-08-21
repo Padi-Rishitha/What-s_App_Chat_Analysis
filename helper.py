@@ -1,12 +1,14 @@
-from numpy import extract
 from urlextract import URLExtract
+from wordcloud import WordCloud
 import pandas as pd
 from collections import Counter
+import emoji
 
-extract= URLExtract()
+extract = URLExtract()
 
-def fetch_stats(selected_user, df):
-    if selected_user == 'Overall':
+def fetch_stats(selected_user,df):
+
+    if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
 
     # fetch the number of messages
@@ -16,14 +18,16 @@ def fetch_stats(selected_user, df):
     words = []
     for message in df['message']:
         words.extend(message.split())
-    
-    #fetch number of media messages
-    num_media_messages =df[df['message'] == '<Media omitted>/n'].shape[0]
-    links= []
+
+    # fetch number of media messages
+    num_media_messages = df[df['message'] == '<Media omitted>\n'].shape[0]
+
+    # fetch number of links shared
+    links = []
     for message in df['message']:
         links.extend(extract.find_urls(message))
 
-    return num_messages, len(words), num_media_messages, len(links)
+    return num_messages,len(words),num_media_messages,len(links)
 
 def most_busy_users(df):
     x = df['user'].value_counts().head()
@@ -81,7 +85,8 @@ def emoji_helper(selected_user,df):
 
     emojis = []
     for message in df['message']:
-        emojis.extend([c for c in message if c in emoji.UNICODE_EMOJI['en']])
+        Emoji=emoji.distinct_emoji_list(message)
+        emojis.extend([emoji.demojize(is_emoji) for is_emoji in Emoji])
 
     emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))))
 
